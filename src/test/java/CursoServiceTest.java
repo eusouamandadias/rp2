@@ -25,10 +25,21 @@ public class CursoServiceTest {
     @Test
     void criarCursoDeveAdicionarNovoCursoAPersistencia() {
         // TODO: Testar a criação de um novo curso:
+        Curso novoCurso = new Curso("C1", "RP II - Testes Unitários", "Aprendendo TU", "P1");
+        int listaCurso = (dataManager.getCursos().size());
+
         // 1. Verificar se o novo curso não é nulo.
+        assertNotNull(novoCurso, "O curso criado não pode ser nulo.");
+
         // 2. Verificar se o título e a descrição estão corretos.
+        assertEquals("RP II - Testes Unitários", novoCurso.getTitulo());
+        assertEquals("Aprendendo TU", novoCurso.getDescricao());
+
         // 3. Confirmar que o status inicial é PENDENTE_APROVACAO.
+        assertEquals(StatusCurso.PENDENTE_APROVACAO, novoCurso.getStatus());
+
         // 4. Garantir que o tamanho da lista de cursos aumentou em 1.
+        assertEquals(listaCurso, dataManager.getCursos().size(), " A lista de cursos deve aumentar em 1."); //refazer
     }
 
     // REQUISITO: Editar cursos existentes (Professor/Admin)
@@ -36,6 +47,8 @@ public class CursoServiceTest {
     void editarCursoDeveAtualizarTituloEDescricao() {
         // TODO: Testar a edição de um curso existente (ex: "c1"):
         // 1. Chamar editarCurso() e verificar se o retorno é 'true'.
+        boolean cursoEditado = cursoService.editarCurso("c1", "curso teste", "sla");
+        assertTrue(cursoEditado, "O curso deve retornar true"); //rever
         // 2. Recuperar o curso na persistência (dataManager).
         // 3. Verificar se o título e a descrição foram atualizados corretamente.
     }
@@ -45,6 +58,8 @@ public class CursoServiceTest {
     void configurarPinDeveAdicionarPinAoCurso() {
         // TODO: Testar a configuração de PIN em um curso (ex: "c1"):
         // 1. Chamar configurarPin() e verificar se o retorno é 'true'.
+        boolean pin = cursoService.configurarPin("c1", "1234");
+        assertTrue(pin, "Configurar pin deve retornar true"); //rever
         // 2. Recuperar o curso na persistência (dataManager).
         // 3. Verificar se o PIN foi adicionado/configurado corretamente.
     }
@@ -54,6 +69,8 @@ public class CursoServiceTest {
     void aprovarCursoDeveMudarStatusParaAtivo() {
         // TODO: Testar a aprovação de um curso PENDENTE (ex: "c2"):
         // 1. Chamar aprovarCurso() e verificar se o retorno é 'true'.
+        boolean statusAprovacao = cursoService.aprovarCurso("c2");
+        assertTrue(statusAprovacao, "A aprovação de um curso deve retornar true"); //rever
         // 2. Recuperar o curso na persistência (dataManager).
         // 3. Verificar se o status do curso mudou para ATIVO.
     }
