@@ -25,62 +25,108 @@ public class CursoServiceTest {
     @Test
     void criarCursoDeveAdicionarNovoCursoAPersistencia() {
         // TODO: Testar a criação de um novo curso:
-        Curso novoCurso = new Curso("C1", "RP II - Testes Unitários", "Aprendendo TU", "P1");
-        int listaCurso = (dataManager.getCursos().size());
+        int tamanhoLista = dataManager.getCursos().size();
+
+        String titulo = "RP II - Testes Unitários";
+        String descricao = "Aprendendo TU";
+        String professorId = "p1";
+        Curso novoCurso = cursoService.criarCurso(titulo, descricao, professorId);
 
         // 1. Verificar se o novo curso não é nulo.
         assertNotNull(novoCurso, "O curso criado não pode ser nulo.");
 
         // 2. Verificar se o título e a descrição estão corretos.
-        assertEquals("RP II - Testes Unitários", novoCurso.getTitulo());
-        assertEquals("Aprendendo TU", novoCurso.getDescricao());
+        assertEquals(titulo, novoCurso.getTitulo(), "O título está correto.");
+        assertEquals(descricao, novoCurso.getDescricao(), "A descrição está correta.");
 
         // 3. Confirmar que o status inicial é PENDENTE_APROVACAO.
         assertEquals(StatusCurso.PENDENTE_APROVACAO, novoCurso.getStatus());
 
         // 4. Garantir que o tamanho da lista de cursos aumentou em 1.
-        assertEquals(listaCurso, dataManager.getCursos().size(), " A lista de cursos deve aumentar em 1."); //refazer
+        assertEquals(tamanhoLista + 1, dataManager.getCursos().size(), " A lista de cursos deve aumentar em 1.");
     }
 
     // REQUISITO: Editar cursos existentes (Professor/Admin)
     @Test
     void editarCursoDeveAtualizarTituloEDescricao() {
         // TODO: Testar a edição de um curso existente (ex: "c1"):
+        String cursoId = "c1";
+        String novoTitulo = "Curso de Testes Unitários(TU)";
+        String novaDescricao = "Como aprender a realizar TU";
+        
         // 1. Chamar editarCurso() e verificar se o retorno é 'true'.
-        boolean cursoEditado = cursoService.editarCurso("c1", "curso teste", "sla");
-        assertTrue(cursoEditado, "O curso deve retornar true"); //rever
+        boolean resultado = cursoService.editarCurso(cursoId, novoTitulo, novaDescricao);
+        assertTrue(resultado, "O curso editado deve retornar true.");
+
         // 2. Recuperar o curso na persistência (dataManager).
+        Optional<Curso> cursoEditado = dataManager.getCursos().stream()
+                .filter(c -> c.getId().equals(cursoId))
+                .findFirst();
+        assertTrue(cursoEditado.isPresent(), "O curso editado deve ser encontrado na persistência.");
+
         // 3. Verificar se o título e a descrição foram atualizados corretamente.
+        assertEquals(novoTitulo, cursoEditado.get().getTitulo(), "O título foi atualizado corretamente.");
+        assertEquals(novaDescricao, cursoEditado.get().getDescricao(), "A descrição foi atualizada corretamente.");
     }
 
     // REQUISITO: Configurar proteção por PIN de acesso (Professor)
     @Test
     void configurarPinDeveAdicionarPinAoCurso() {
         // TODO: Testar a configuração de PIN em um curso (ex: "c1"):
+        String cursoId = "c1";
+        String pin = "1234";
+        
         // 1. Chamar configurarPin() e verificar se o retorno é 'true'.
-        boolean pin = cursoService.configurarPin("c1", "1234");
-        assertTrue(pin, "Configurar pin deve retornar true"); //rever
+        boolean resultado = cursoService.configurarPin(cursoId, pin);
+        assertTrue(resultado, "O PIN configurado deve retornar true.");
+
         // 2. Recuperar o curso na persistência (dataManager).
+        Optional<Curso> cursoComPin = dataManager.getCursos().stream()
+                .filter(c -> c.getId().equals(cursoId))
+                .findFirst();
+        assertTrue(cursoComPin.isPresent(), "O curso com pin deve ser encontrado na persistência.");
+
         // 3. Verificar se o PIN foi adicionado/configurado corretamente.
+        assertEquals(pin, cursoComPin.get().getPinAcesso(), "O PIN foi adicionado corretamente.");
     }
 
     // REQUISITO: Aprovar/rejeitar cursos (Administrador)
     @Test
     void aprovarCursoDeveMudarStatusParaAtivo() {
         // TODO: Testar a aprovação de um curso PENDENTE (ex: "c2"):
+        String cursoId = "c2";
+        
         // 1. Chamar aprovarCurso() e verificar se o retorno é 'true'.
-        boolean statusAprovacao = cursoService.aprovarCurso("c2");
-        assertTrue(statusAprovacao, "A aprovação de um curso deve retornar true"); //rever
+        boolean resultado = cursoService.aprovarCurso(cursoId);
+        assertTrue(resultado, "O curso aprovado deve retornar true.");
+
         // 2. Recuperar o curso na persistência (dataManager).
+        Optional<Curso> cursoAprovado = dataManager.getCursos().stream()
+                .filter(c -> c.getId().equals(cursoId))
+                .findFirst();
+        assertTrue(cursoAprovado.isPresent(), "O curso aprovado deve existir.");
+
         // 3. Verificar se o status do curso mudou para ATIVO.
+        assertEquals(StatusCurso.ATIVO, cursoAprovado.get().getStatus(), "O status do curso deve mudar para ATIVO.");
     }
 
     @Test
     void rejeitarCursoDeveMudarStatusParaInativo() {
         // TODO: Testar a rejeição de um curso (ex: "c1"):
+        String cursoId = "c1";
+        
         // 1. Chamar rejeitarCurso() e verificar se o retorno é 'true'.
+        boolean resultado = cursoService.rejeitarCurso(cursoId);
+        assertTrue(resultado, "O curso rejeitado deve retornar true");
+
         // 2. Recuperar o curso na persistência (dataManager).
+        Optional<Curso> cursoRejeitado = dataManager.getCursos().stream()
+                .filter(c -> c.getId().equals(cursoId))
+                .findFirst();
+        assertTrue(cursoRejeitado.isPresent(), "O curso rejeitado deve existir.");
+
         // 3. Verificar se o status do curso mudou para INATIVO.
+        assertEquals(StatusCurso.INATIVO, cursoRejeitado.get().getStatus(), "O status do curso deve mudar para INATIVO.");
     }
 
     // REQUISITO: Visualizar catálogo de cursos disponíveis (Estudante/Comum)
@@ -90,6 +136,7 @@ public class CursoServiceTest {
         // 1. Chamar visualizarCatalogo().
         // 2. Verificar se a lista retornada contém APENAS cursos com StatusCurso.ATIVO.
         // 3. Verificar se o tamanho da lista está correto (baseado nos dados iniciais).
+
     }
 
     // REQUISITO: Ingressar em cursos (com inserção de PIN quando necessário)
