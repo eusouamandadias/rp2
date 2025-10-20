@@ -53,7 +53,7 @@ public class CursoServiceTest {
         String cursoId = "c1";
         String novoTitulo = "Curso de Testes Unitários(TU)";
         String novaDescricao = "Como aprender a realizar TU";
-        
+
         // 1. Chamar editarCurso() e verificar se o retorno é 'true'.
         boolean resultado = cursoService.editarCurso(cursoId, novoTitulo, novaDescricao);
         assertTrue(resultado, "O curso foi editado.");
@@ -75,7 +75,7 @@ public class CursoServiceTest {
         // TODO: Testar a configuração de PIN em um curso (ex: "c1"):
         String cursoId = "c1";
         String pin = "1234";
-        
+
         // 1. Chamar configurarPin() e verificar se o retorno é 'true'.
         boolean resultado = cursoService.configurarPin(cursoId, pin);
         assertTrue(resultado, "O PIN foi configurado.");
@@ -95,7 +95,7 @@ public class CursoServiceTest {
     void aprovarCursoDeveMudarStatusParaAtivo() {
         // TODO: Testar a aprovação de um curso PENDENTE (ex: "c2"):
         String cursoId = "c2";
-        
+
         // 1. Chamar aprovarCurso() e verificar se o retorno é 'true'.
         boolean resultado = cursoService.aprovarCurso(cursoId);
         assertTrue(resultado, "O curso foi aprovado.");
@@ -114,7 +114,7 @@ public class CursoServiceTest {
     void rejeitarCursoDeveMudarStatusParaInativo() {
         // TODO: Testar a rejeição de um curso (ex: "c1"):
         String cursoId = "c1";
-        
+
         // 1. Chamar rejeitarCurso() e verificar se o retorno é 'true'.
         boolean resultado = cursoService.rejeitarCurso(cursoId);
         assertTrue(resultado, "O curso foi rejeitado.");
@@ -126,16 +126,24 @@ public class CursoServiceTest {
         assertTrue(cursoRejeitado.isPresent(), "O curso rejeitado deve ser encontrado na persistência.");
 
         // 3. Verificar se o status do curso mudou para INATIVO.
-        assertEquals(StatusCurso.INATIVO, cursoRejeitado.get().getStatus(), "O status do curso deve mudar para INATIVO.");
+        assertEquals(StatusCurso.INATIVO, cursoRejeitado.get().getStatus(),
+                "O status do curso deve mudar para INATIVO.");
     }
 
     // REQUISITO: Visualizar catálogo de cursos disponíveis (Estudante/Comum)
     @Test
     void visualizarCatalogoDeveRetornarApenasCursosAtivos() {
         // TODO: Testar a visualização do catálogo:
+
         // 1. Chamar visualizarCatalogo().
+        List<Curso> catalogo = cursoService.visualizarCatalogo();
+
         // 2. Verificar se a lista retornada contém APENAS cursos com StatusCurso.ATIVO.
+        assertTrue(catalogo.stream().allMatch(c -> c.getStatus() == StatusCurso.ATIVO),
+                "Todos os cursos no catálogo devem ter o status ATIVO.");
+
         // 3. Verificar se o tamanho da lista está correto (baseado nos dados iniciais).
+        assertEquals(2, catalogo.size(), "O catálogo deve conter apenas 2 cursos ativos.");
 
     }
 
@@ -143,23 +151,44 @@ public class CursoServiceTest {
     @Test
     void ingressarCursoComPinDeveFuncionarComPinCorreto() {
         // TODO: Testar o ingresso em um curso com PIN (ex: "c2"):
+        String cursoId = "c2";
+        String pinFornecido = "1234";
+
         // 1. Garantir que o curso está ATIVO (configurar se necessário).
+        cursoService.aprovarCurso(cursoId);
+
         // 2. Chamar ingressarCurso() com o PIN CORRETO.
+        boolean resultado = cursoService.ingressarCurso(cursoId, pinFornecido);
+
         // 3. Verificar se o retorno é 'true'.
+        assertTrue(resultado, "O ingresso ao curso com o PIN correto deve funcionar.");
     }
 
     @Test
     void ingressarCursoComPinDeveFalharComPinIncorreto() {
         // TODO: Testar o ingresso em um curso com PIN (ex: "c2"):
+        String cursoId = "c2";
+        String pinFornecido = "1234";
+
         // 1. Garantir que o curso está ATIVO (configurar se necessário).
+        cursoService.aprovarCurso(cursoId);
+
         // 2. Chamar ingressarCurso() com um PIN INCORRETO.
+        boolean resultado = cursoService.ingressarCurso(cursoId, "pinIncorreto");
+
         // 3. Verificar se o retorno é 'false'.
+        assertFalse(resultado, "O ingresso ao curso com o PIN incorreto deve retornar false.");
     }
 
     @Test
     void ingressarCursoSemPinDeveFuncionar() {
         // TODO: Testar o ingresso em um curso SEM PIN (ex: "c1"):
+        String cursoId = "c1";
+
         // 1. Chamar ingressarCurso() passando 'null' ou uma string vazia como PIN.
+        boolean resultado = cursoService.ingressarCurso(cursoId, null);
+
         // 2. Verificar se o retorno é 'true'.
+        assertTrue(resultado, "O ingresso em um curso sem PIN de acesso deve funcionar.");
     }
 }
