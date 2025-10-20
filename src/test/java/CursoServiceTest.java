@@ -43,7 +43,7 @@ public class CursoServiceTest {
         assertEquals(StatusCurso.PENDENTE_APROVACAO, novoCurso.getStatus());
 
         // 4. Garantir que o tamanho da lista de cursos aumentou em 1.
-        assertEquals(tamanhoLista + 1, dataManager.getCursos().size(), " A lista de cursos deve aumentar em 1.");
+        assertEquals(tamanhoLista + 1, dataManager.getCursos().size(), "A lista de cursos deve aumentar em 1.");
     }
 
     // REQUISITO: Editar cursos existentes (Professor/Admin)
@@ -56,7 +56,7 @@ public class CursoServiceTest {
         
         // 1. Chamar editarCurso() e verificar se o retorno é 'true'.
         boolean resultado = cursoService.editarCurso(cursoId, novoTitulo, novaDescricao);
-        assertTrue(resultado, "O curso editado deve retornar true.");
+        assertTrue(resultado, "O curso foi editado.");
 
         // 2. Recuperar o curso na persistência (dataManager).
         Optional<Curso> cursoEditado = dataManager.getCursos().stream()
@@ -78,7 +78,7 @@ public class CursoServiceTest {
         
         // 1. Chamar configurarPin() e verificar se o retorno é 'true'.
         boolean resultado = cursoService.configurarPin(cursoId, pin);
-        assertTrue(resultado, "O PIN configurado deve retornar true.");
+        assertTrue(resultado, "O PIN foi configurado.");
 
         // 2. Recuperar o curso na persistência (dataManager).
         Optional<Curso> cursoComPin = dataManager.getCursos().stream()
@@ -98,13 +98,13 @@ public class CursoServiceTest {
         
         // 1. Chamar aprovarCurso() e verificar se o retorno é 'true'.
         boolean resultado = cursoService.aprovarCurso(cursoId);
-        assertTrue(resultado, "O curso aprovado deve retornar true.");
+        assertTrue(resultado, "O curso foi aprovado.");
 
         // 2. Recuperar o curso na persistência (dataManager).
         Optional<Curso> cursoAprovado = dataManager.getCursos().stream()
                 .filter(c -> c.getId().equals(cursoId))
                 .findFirst();
-        assertTrue(cursoAprovado.isPresent(), "O curso aprovado deve existir.");
+        assertTrue(cursoAprovado.isPresent(), "O curso aprovado deve ser encontrado na persistência.");
 
         // 3. Verificar se o status do curso mudou para ATIVO.
         assertEquals(StatusCurso.ATIVO, cursoAprovado.get().getStatus(), "O status do curso deve mudar para ATIVO.");
@@ -117,13 +117,13 @@ public class CursoServiceTest {
         
         // 1. Chamar rejeitarCurso() e verificar se o retorno é 'true'.
         boolean resultado = cursoService.rejeitarCurso(cursoId);
-        assertTrue(resultado, "O curso rejeitado deve retornar true");
+        assertTrue(resultado, "O curso foi rejeitado.");
 
         // 2. Recuperar o curso na persistência (dataManager).
         Optional<Curso> cursoRejeitado = dataManager.getCursos().stream()
                 .filter(c -> c.getId().equals(cursoId))
                 .findFirst();
-        assertTrue(cursoRejeitado.isPresent(), "O curso rejeitado deve existir.");
+        assertTrue(cursoRejeitado.isPresent(), "O curso rejeitado deve ser encontrado na persistência.");
 
         // 3. Verificar se o status do curso mudou para INATIVO.
         assertEquals(StatusCurso.INATIVO, cursoRejeitado.get().getStatus(), "O status do curso deve mudar para INATIVO.");
